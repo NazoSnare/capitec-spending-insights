@@ -1,5 +1,3 @@
-# syntax=docker/dockerfile:1.7
-#
 # Spending Insights: the Next.js app and its mock API in one small image.
 #
 #   docker build -t spending-insights .
