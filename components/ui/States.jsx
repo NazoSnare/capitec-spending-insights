@@ -3,7 +3,7 @@
  * failed, and nothing to show. One component each, so every section says them the same
  * way and none is forgotten.
  */
-import { AlertCircle, Inbox, RotateCw } from "lucide-react";
+import { TbAlertCircle, TbInbox, TbRotateClockwise } from "react-icons/tb";
 import Button from "./Button";
 import Skeleton from "./Skeleton";
 
@@ -20,15 +20,15 @@ export function ErrorBlock({ message, onRetry }) {
   return (
     <div role="alert" className="flex flex-col items-start gap-3 rounded-2xl bg-bad-bg p-4 text-bad">
       <div className="flex items-start gap-2">
-        <AlertCircle size={18} className="mt-0.5 shrink-0" aria-hidden="true" />
+        <TbAlertCircle size={18} className="mt-0.5 shrink-0" aria-hidden="true" />
         <p className="text-[14px] font-medium">{message || "This could not be loaded."}</p>
       </div>
-      {onRetry ? <Button size="sm" icon={RotateCw} onClick={onRetry}>Try again</Button> : null}
+      {onRetry ? <Button size="sm" icon={TbRotateClockwise} onClick={onRetry}>Try again</Button> : null}
     </div>
   );
 }
 
-export function EmptyBlock({ title = "Nothing here yet", children, icon: Icon = Inbox }) {
+export function EmptyBlock({ title = "Nothing here yet", children, icon: Icon = TbInbox }) {
   return (
     <div className="flex flex-col items-center gap-2 rounded-2xl bg-card-muted px-6 py-10 text-center">
       <span className="grid h-11 w-11 place-items-center rounded-2xl bg-black/[0.05] text-ink-3"><Icon size={20} aria-hidden="true" /></span>

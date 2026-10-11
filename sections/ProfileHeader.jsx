@@ -1,7 +1,7 @@
 "use client";
 
 /** Who this is: the greeting, the account and what they have spent since joining. */
-import { BadgeCheck } from "lucide-react";
+import { TbRosetteDiscountCheck } from "react-icons/tb";
 import { useSelector } from "react-redux";
 import { useProfile } from "@/hooks/useSpendingApi";
 import { errorMessage } from "@/lib/apiClient";
@@ -29,7 +29,7 @@ export default function ProfileHeader() {
         )}
         {data ? (
           <div className="mt-2 flex flex-wrap items-center gap-2 text-[13.5px] text-ink-3">
-            <Badge tone="info" icon={BadgeCheck}>{humanise(data.accountType)} account</Badge>
+            <Badge tone="info" icon={TbRosetteDiscountCheck}>{humanise(data.accountType)} account</Badge>
             <span>Client since {formatDay(data.joinDate)}</span>
           </div>
         ) : null}

@@ -8,7 +8,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
-import { Eye, EyeOff } from "lucide-react";
+import { TbEye, TbEyeOff } from "react-icons/tb";
 import Logo from "@/components/Logo";
 import { selectPrefs, setCustomer, toggleHideAmounts } from "@/store/preferencesSlice";
 
@@ -51,7 +51,7 @@ export default function AppShell({ children }) {
               aria-pressed={hideAmounts}
               className="inline-flex h-9 items-center gap-2 rounded-full border border-white/25 px-3 text-[13.5px] font-medium hover:bg-white/10"
             >
-              {hideAmounts ? <EyeOff size={16} aria-hidden="true" /> : <Eye size={16} aria-hidden="true" />}
+              {hideAmounts ? <TbEyeOff size={16} aria-hidden="true" /> : <TbEye size={16} aria-hidden="true" />}
               <span className="hidden sm:inline">{hideAmounts ? "Show amounts" : "Hide amounts"}</span>
               <span className="sr-only sm:hidden">{hideAmounts ? "Show amounts" : "Hide amounts"}</span>
             </button>

@@ -76,12 +76,93 @@ waits for it to report healthy (`.github/workflows/ci.yml`).
 
 ## How it is built
 
+**This is a React 19 app.** Every screen is plain React: function components, hooks,
+Redux Toolkit and TanStack Query. Next.js provides three things only:
+
+- page routing;
+- the production server;
+- a home for the mock API.
+
+Next-specific code is kept to five imports in four files: `Link` and `usePathname` in
+the shell and two sections, and `Image` in the logo. Moving to Vite with React Router
+means changing those imports; the components, sections, hooks and store move unchanged. The API sits behind one
+setting, `NEXT_PUBLIC_API_BASE`: point it at a real back end and the route handlers in
+`app/api` can be deleted.
+
+```mermaid
+flowchart LR
+  subgraph Browser
+    direction TB
+    UI["React components<br/>containers → sections → components"]
+    RQ["TanStack Query<br/>server state: cache, retries, refetch"]
+    RX["Redux Toolkit<br/>preferences"]
+    LS[("localStorage<br/>preferences only")]
+    UI -- "useSummary(), useTransactions() …" --> RQ
+    UI -- "useSelector / dispatch" --> RX
+    RX <-- "redux-persist" --> LS
+  end
+  subgraph Server["Next.js server (one Docker image)"]
+    direction TB
+    RH["Route handlers<br/>app/api/customers/[id]/…"]
+    SP["server/spending.js<br/>validation and the seven endpoints"]
+    LG["server/ledger.js<br/>deterministic transactions, in cents"]
+    RH --> SP --> LG
+  end
+  RQ -- "GET /api/customers/12345/…<br/>JSON, or 400 / 404 with an error body" --> RH
+```
+
+Figures live only in TanStack Query's in-memory cache, and only the customer's choices
+are written to the browser.
+
+A change of period, step by step:
+
+```mermaid
+sequenceDiagram
+  actor C as Customer
+  participant T as PeriodToolbar
+  participant R as Redux (persisted)
+  participant S as SummaryCards
+  participant Q as TanStack Query
+  participant A as Mock API
+
+  C->>T: chooses "90 days"
+  T->>R: dispatch(setPeriod("90d"))
+  R-->>R: saved to localStorage
+  R-->>S: period = "90d"
+  S->>Q: useSummary({ customerId, period: "90d" })
+  alt already cached and fresh
+    Q-->>S: cached figures
+  else
+    Q->>A: GET /spending/summary?period=90d
+    A-->>Q: 200 { totalSpent, transactionCount, … }
+    Q-->>S: figures, cached under ["customer", id, "summary", { period }]
+  end
+  S-->>C: new totals and the change vs the previous 90 days
+```
+
+How the components are layered (each layer only uses the ones below it):
+
+```mermaid
+flowchart TB
+  P["app/ (routes)<br/>page.js · transactions/page.js"] --> CO["containers/<br/>AppShell · DashboardContainer · TransactionsContainer"]
+  CO --> SE["sections/<br/>SummaryCards · CategoryBreakdown · TrendSection<br/>GoalsSection · RecentTransactions · TransactionList …"]
+  SE --> CH["components/charts/<br/>CategoryDonut · SpendingTrendChart (Victory)"]
+  SE --> SH["components/<br/>TransactionRow · CategoryIcon · Logo"]
+  SE --> HK["hooks/ and store/<br/>data and preferences"]
+  CH --> UI["components/ui/<br/>Card · StatCard · Button · Badge · Money · Delta<br/>SegmentedControl · Select · DateField · ProgressBar<br/>Pagination · States · Skeleton"]
+  SH --> UI
+```
+
+Sections are the only layer that fetches. Each one handles its own loading, error and
+empty states, so a failing endpoint breaks one card, not the page.
+
 | | |
 | --- | --- |
 | Framework | Next.js 16 (App Router), React 19, JavaScript |
 | Server state | TanStack Query: one hook per endpoint (`hooks/useSpendingApi.js`) |
 | Client state | Redux Toolkit, with redux-persist saving the preferences to localStorage |
 | Charts | Victory |
+| Icons | react-icons (the Tabler set) |
 | Styling | Tailwind CSS 4, with the Capitec palette as theme tokens (`app/globals.css`) |
 | Mock API | Next route handlers under `app/api`, over pure functions in `server/` |
 | Tests | Vitest, Testing Library, Playwright, axe-core |

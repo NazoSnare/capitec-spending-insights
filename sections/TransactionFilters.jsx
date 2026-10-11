@@ -5,7 +5,7 @@
  * API's /filters endpoint, so a new category appears here without a code change.
  */
 import { useDispatch, useSelector } from "react-redux";
-import { RotateCcw } from "lucide-react";
+import { TbRefresh } from "react-icons/tb";
 import { useFilters } from "@/hooks/useSpendingApi";
 import { resetTransactionFilters, selectPrefs, setTransactionFilter } from "@/store/preferencesSlice";
 import Select from "@/components/ui/Select";
@@ -37,7 +37,7 @@ export default function TransactionFilters() {
         <DateField label="To" value={f.endDate} min={f.startDate || undefined} max={today} invalid={badRange} onChange={(v) => set({ endDate: v })} />
         <Select label="Sort by" value={f.sortBy} onChange={(v) => set({ sortBy: v })} options={SORTS} />
         <div className="flex items-end">
-          <Button icon={RotateCcw} disabled={!active} onClick={() => dispatch(resetTransactionFilters())} className="w-full lg:w-auto">Clear</Button>
+          <Button icon={TbRefresh} disabled={!active} onClick={() => dispatch(resetTransactionFilters())} className="w-full lg:w-auto">Clear</Button>
         </div>
       </div>
       {badRange ? <p role="alert" className="text-[13px] font-medium text-bad">The start date must be on or before the end date.</p> : null}

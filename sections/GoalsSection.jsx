@@ -6,7 +6,7 @@
  * before the budget is gone.
  */
 import { useSelector } from "react-redux";
-import { AlertTriangle, CheckCircle2, Target, XCircle } from "lucide-react";
+import { TbAlertTriangle, TbCircleCheck, TbCircleX, TbTarget } from "react-icons/tb";
 import { useGoals } from "@/hooks/useSpendingApi";
 import { errorMessage } from "@/lib/apiClient";
 import { selectCustomerId } from "@/store/preferencesSlice";
@@ -18,9 +18,9 @@ import Skeleton from "@/components/ui/Skeleton";
 import { ErrorBlock, EmptyBlock } from "@/components/ui/States";
 
 const STATUS = {
-  on_track: { tone: "ok", label: "On track", bar: "ok", icon: CheckCircle2 },
-  warning: { tone: "warn", label: "Watch this", bar: "warn", icon: AlertTriangle },
-  over_budget: { tone: "bad", label: "Over budget", bar: "bad", icon: XCircle },
+  on_track: { tone: "ok", label: "On track", bar: "ok", icon: TbCircleCheck },
+  warning: { tone: "warn", label: "Watch this", bar: "warn", icon: TbAlertTriangle },
+  over_budget: { tone: "bad", label: "Over budget", bar: "bad", icon: TbCircleX },
 };
 
 /** How far through the month today is, as a percentage. */
@@ -39,7 +39,7 @@ export default function GoalsSection() {
       {isError ? <ErrorBlock message={errorMessage(error)} onRetry={refetch} /> : isLoading || !data ? (
         <div className="space-y-5">{[0, 1, 2].map((i) => <Skeleton key={i} className="h-12" />)}</div>
       ) : !data.goals.length ? (
-        <EmptyBlock icon={Target} title="No budgets set">Set a monthly budget for a category to see how you are tracking.</EmptyBlock>
+        <EmptyBlock icon={TbTarget} title="No budgets set">Set a monthly budget for a category to see how you are tracking.</EmptyBlock>
       ) : (
         <ul className="space-y-5">
           {data.goals.map((g) => {

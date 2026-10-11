@@ -6,7 +6,7 @@
  */
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { BarChart3, Table2 } from "lucide-react";
+import { TbChartBar, TbTable } from "react-icons/tb";
 import { useTrends } from "@/hooks/useSpendingApi";
 import { errorMessage } from "@/lib/apiClient";
 import { selectPrefs, setTrendMonths } from "@/store/preferencesSlice";
@@ -29,7 +29,7 @@ export default function TrendSection() {
       <SegmentedControl size="sm" label="Months shown" value={String(trendMonths)} onChange={(v) => dispatch(setTrendMonths(v))}
         options={[{ value: "6", label: "6m" }, { value: "12", label: "12m" }, { value: "24", label: "24m" }]} />
       <SegmentedControl size="sm" label="Show as" value={view} onChange={setView}
-        options={[{ value: "chart", label: <span className="inline-flex items-center gap-1"><BarChart3 size={14} aria-hidden="true" />Chart</span> }, { value: "table", label: <span className="inline-flex items-center gap-1"><Table2 size={14} aria-hidden="true" />Table</span> }]} />
+        options={[{ value: "chart", label: <span className="inline-flex items-center gap-1"><TbChartBar size={14} aria-hidden="true" />Chart</span> }, { value: "table", label: <span className="inline-flex items-center gap-1"><TbTable size={14} aria-hidden="true" />Table</span> }]} />
     </div>
   );
 
@@ -38,7 +38,7 @@ export default function TrendSection() {
       {isError ? <ErrorBlock message={errorMessage(error)} onRetry={refetch} /> : isLoading || !data ? (
         <Skeleton className="h-[240px]" />
       ) : !data.trends.some((t) => t.transactionCount) ? (
-        <EmptyBlock icon={BarChart3} title="No spending yet">Monthly totals appear once you start using your account.</EmptyBlock>
+        <EmptyBlock icon={TbChartBar} title="No spending yet">Monthly totals appear once you start using your account.</EmptyBlock>
       ) : view === "chart" ? (
         <SpendingTrendChart trends={data.trends} />
       ) : (

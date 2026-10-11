@@ -1,5 +1,5 @@
 /** Previous / next with "21–40 of 1 225", for a list paged by offset. */
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { TbChevronLeft, TbChevronRight } from "react-icons/tb";
 import Button from "./Button";
 
 export default function Pagination({ offset, limit, total, onPage }) {
@@ -14,9 +14,9 @@ export default function Pagination({ offset, limit, total, onPage }) {
         {from.toLocaleString("en-ZA")}–{to.toLocaleString("en-ZA")} of {total.toLocaleString("en-ZA")}
       </p>
       <div className="flex gap-2">
-        <Button size="sm" icon={ChevronLeft} disabled={page <= 0} onClick={() => onPage(page - 1)} aria-label="Previous page">Previous</Button>
+        <Button size="sm" icon={TbChevronLeft} disabled={page <= 0} onClick={() => onPage(page - 1)} aria-label="Previous page">Previous</Button>
         <Button size="sm" disabled={page >= last} onClick={() => onPage(page + 1)} aria-label="Next page">
-          Next <ChevronRight size={15} aria-hidden="true" />
+          Next <TbChevronRight size={15} aria-hidden="true" />
         </Button>
       </div>
     </nav>

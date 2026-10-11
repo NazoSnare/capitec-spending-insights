@@ -8,7 +8,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useDispatch, useSelector } from "react-redux";
-import { PieChart } from "lucide-react";
+import { TbChartPie } from "react-icons/tb";
 import { useCategories } from "@/hooks/useSpendingApi";
 import { errorMessage } from "@/lib/apiClient";
 import { selectPrefs, setTransactionFilter } from "@/store/preferencesSlice";
@@ -36,7 +36,7 @@ export default function CategoryBreakdown() {
           <div className="space-y-3">{[0, 1, 2, 3, 4].map((i) => <Skeleton key={i} className="h-10" />)}</div>
         </div>
       ) : !data.categories.length ? (
-        <EmptyBlock icon={PieChart} title="No spending in this period">Choose a longer period to see where your money went.</EmptyBlock>
+        <EmptyBlock icon={TbChartPie} title="No spending in this period">Choose a longer period to see where your money went.</EmptyBlock>
       ) : (
         <div className={`grid items-center gap-6 md:grid-cols-[240px_1fr] ${isFetching ? "opacity-60 transition-opacity" : ""}`}>
           <div className="mx-auto w-full max-w-[240px]">

@@ -7,7 +7,7 @@
  */
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { CalendarRange, X } from "lucide-react";
+import { TbCalendarEvent, TbX } from "react-icons/tb";
 import { selectPrefs, setCustomRange, setPeriod } from "@/store/preferencesSlice";
 import { PERIODS } from "@/lib/periods";
 import SegmentedControl from "@/components/ui/SegmentedControl";
@@ -51,11 +51,11 @@ export default function PeriodToolbar() {
         <span className="inline-flex items-center gap-1 rounded-full bg-navy px-3 py-1.5 text-[13px] font-semibold text-white">
           {formatDay(customRange.startDate)} – {formatDay(customRange.endDate)}
           <button type="button" aria-label="Clear the custom range" onClick={() => dispatch(setPeriod(period))} className="ml-1 rounded-full p-0.5 hover:bg-white/20">
-            <X size={14} aria-hidden="true" />
+            <TbX size={14} aria-hidden="true" />
           </button>
         </span>
       ) : null}
-      <Button size="sm" icon={CalendarRange} onClick={() => setOpen((o) => !o)} aria-expanded={open} aria-controls="custom-range">
+      <Button size="sm" icon={TbCalendarEvent} onClick={() => setOpen((o) => !o)} aria-expanded={open} aria-controls="custom-range">
         Custom range
       </Button>
       {open ? (

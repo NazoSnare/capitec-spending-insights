@@ -2,7 +2,7 @@
 
 /** The full, filtered, paged list of transactions. */
 import { useDispatch, useSelector } from "react-redux";
-import { SearchX } from "lucide-react";
+import { TbSearchOff } from "react-icons/tb";
 import { useTransactions } from "@/hooks/useSpendingApi";
 import { errorMessage } from "@/lib/apiClient";
 import { resetTransactionFilters, selectPrefs, setTransactionFilter, setTransactionPage } from "@/store/preferencesSlice";
@@ -35,7 +35,7 @@ export default function TransactionList() {
       {isError ? <ErrorBlock message={errorMessage(error)} onRetry={refetch} /> : isLoading || (!data && !badRange) ? (
         <div className="space-y-4">{Array.from({ length: 8 }).map((_, i) => <Skeleton key={i} className="h-11" />)}</div>
       ) : !data?.transactions.length ? (
-        <EmptyBlock icon={SearchX} title="No transactions match">
+        <EmptyBlock icon={TbSearchOff} title="No transactions match">
           Try another category or a wider date range.{" "}
           <Button size="sm" variant="ghost" onClick={() => dispatch(resetTransactionFilters())}>Clear filters</Button>
         </EmptyBlock>

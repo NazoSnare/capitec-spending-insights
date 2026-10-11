@@ -1,14 +1,15 @@
 /**
- * The API names each category's icon ("shopping-cart", "film", ...). Those are Lucide's
- * icon names, so they map one to one; anything unknown falls back to a tag rather
- * than breaking the row.
+ * The API names each category's icon ("shopping-cart", "film", ...) rather than sending
+ * an image. This maps those names to react-icons' Tabler set; a name it does not know
+ * falls back to a tag rather than breaking the row, so a new category on the server
+ * still renders.
  */
-import { Car, Film, ShoppingBag, ShoppingCart, Tag, Utensils, Zap } from "lucide-react";
+import { TbBolt, TbCar, TbMovie, TbShoppingBag, TbShoppingCart, TbTag, TbToolsKitchen2 } from "react-icons/tb";
 
-const ICONS = { "shopping-cart": ShoppingCart, film: Film, car: Car, utensils: Utensils, "shopping-bag": ShoppingBag, zap: Zap };
+const ICONS = { "shopping-cart": TbShoppingCart, film: TbMovie, car: TbCar, utensils: TbToolsKitchen2, "shopping-bag": TbShoppingBag, zap: TbBolt };
 
 export default function CategoryIcon({ icon, color, size = 36 }) {
-  const Icon = ICONS[icon] || Tag;
+  const Icon = ICONS[icon] || TbTag;
   return (
     <span
       aria-hidden="true"
