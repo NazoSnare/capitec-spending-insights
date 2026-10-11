@@ -8,7 +8,12 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "sw
 export const metadata = {
   title: "Spending Insights | Capitec",
   description: "See where your money goes: spending by category, monthly trends and budgets.",
-  icons: { icon: "/favicon.svg" },
+  // Capitec's mark: SVG where the browser supports it, PNG otherwise, and a larger PNG
+  // for an iPhone home screen.
+  icons: {
+    icon: [{ url: "/favicon.svg", type: "image/svg+xml" }, { url: "/favicon.png", type: "image/png", sizes: "64x64" }],
+    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180" }],
+  },
 };
 
 export const viewport = { themeColor: "#00486d", width: "device-width", initialScale: 1 };

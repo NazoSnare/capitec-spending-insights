@@ -1,30 +1,31 @@
 # Spending Insights
 
-A responsive dashboard that shows a Capitec client where their money goes: spending by
-category, monthly trends, budgets and every transaction. Built for the Capitec
-**Software Engineer (Front-End)** take-home, *Customer Spending Insights Dashboard*.
+A dashboard that shows a Capitec client where their money goes, on a phone or a desktop.
+It covers spending by category, the trend month by month, budgets, and every
+transaction. It is my submission for the Software Engineer (Front-End) take-home,
+project 1: Customer Spending Insights Dashboard.
 
 ![The overview](docs/screenshots/overview.png)
 
-All data is fictional. The mock API implements all seven endpoints in
-`CustomerSpendingInsightsEndpoints.md`, on one consistent set of generated transactions,
-so the summary, categories, trends and transaction list always agree and every filter
-really filters.
+All of the data is made up. The mock API implements the seven endpoints in
+`CustomerSpendingInsightsEndpoints.md`, and every one of them reads the same set of
+generated transactions. So the summary, the category split, the trend and the list agree
+with each other, and a filter actually changes what comes back.
 
 ## Run it
 
-**Docker**, the only requirement:
+With Docker, which is all you need:
 
 ```sh
 docker build -t spending-insights .
 docker run --rm -p 3000:3000 spending-insights
 ```
 
-Open <http://localhost:3000>. The image runs lint and the unit tests while it builds, so
-an image that builds has passed them. It runs as an unprivileged user and has a health
-check against a real API endpoint.
+Then open <http://localhost:3000>. Lint and the unit tests run inside the build, so if the
+image builds, they passed. The container runs as an unprivileged user, and its health
+check calls a real API endpoint.
 
-**Locally**, with Node 20.9 or newer:
+Or locally, with Node 20.9 or newer:
 
 ```sh
 npm ci
@@ -41,38 +42,31 @@ npm run test:e2e   # end-to-end in a real browser, desktop and phone (Playwright
 npm run test:all   # all of the above, in order
 ```
 
-`test:e2e` builds nothing itself: run `npm run build` first. It downloads nothing either:
-run `npx playwright install chromium` once, or use an installed Chrome with
+`test:e2e` tests the production build, so run `npm run build` first. It needs a browser:
+either run `npx playwright install chromium` once, or point it at an installed Chrome with
 `PW_CHANNEL=chrome npm run test:e2e`.
 
-GitHub Actions runs all of it on every push, then builds the Docker image, starts it and
-waits for it to report healthy (`.github/workflows/ci.yml`).
+On every push, GitHub Actions runs all of this, then builds the Docker image, starts it
+and waits for the health check to pass (`.github/workflows/ci.yml`).
 
 | | What is covered |
 | --- | --- |
 | API (29 tests) | every endpoint; validation and error codes; the endpoints agreeing with each other to the cent; percentages adding to 100; budget pace; 404s; no internal fields leaked |
 | Front end (37 tests) | formatting; the preferences slice and what it persists; components (the searchable picker's keyboard and screen-reader behaviour, the period switch, hidden amounts, progress, paging); sections rendered against the real API logic, including failure and retry |
-| End to end (22 runs) | the overview, period changes surviving a reload, hiding amounts, switching customer by searching, a customer with no budgets, a category opening its transactions, paging and sorting, the table view, no sideways scroll, and an axe WCAG 2 AA scan of both pages, each on desktop and phone |
+| End to end (26 runs) | the overview, period changes surviving a reload, hiding amounts, switching customer by searching, a customer with no budgets, a category row and a donut slice each opening their transactions, paging and sorting, the table view, pointer cursors, no sideways scroll, and an axe WCAG 2 AA scan of both pages, each on desktop and phone |
 
 ## What it does
 
-- **Summary**: total spent, number of transactions, average and top category for 7 days,
-  30 days, 90 days or a year, each compared with the period before it.
-- **Spending by category**: a donut and, beside it, the same figures as a list. Choose a
-  category to open its transactions, already filtered. A custom date range is supported.
-- **Monthly spending**: 6, 12 or 24 months as a bar chart with the average month marked,
-  or as a table. The current month is drawn lighter because it is not over yet.
-- **Monthly budgets**: each budget's use, with a marker for where spending would be if
-  spread evenly through the month. "Watch this" means ahead of pace, not just "over 80%".
-- **Transactions**: filter by category and dates, sort four ways, 10 to 100 per page.
-- **Hide amounts**: one switch replaces every rand figure on screen and for screen readers,
-  for when someone is looking over your shoulder.
-- **Viewing as**: a searchable picker to switch between the six demo clients. Type part
-  of a name, a client number or an account type ("merwe", "67890", "premium") and the
-  list narrows as you type, with the match highlighted. It works fully from the keyboard
-  (arrows, Enter, Escape) and with a screen reader. See [The searchable picker](#the-searchable-picker).
-- **Remembered**: the period, filters, sort, page size, the client being viewed and the
-  hide-amounts switch are kept between visits. Figures never are.
+| | |
+| --- | --- |
+| Summary | Total spent, number of transactions, the average and the top category, for 7 days, 30 days, 90 days or a year. Each is compared with the period just before it. |
+| Spending by category | A donut, with the same figures listed beside it. Click a slice or a row to open that category's transactions with the filter already set. You can also pick your own date range. |
+| Monthly spending | 6, 12 or 24 months as bars, with a dashed line for the average month. Switch to a table to read exact figures. The current month is drawn lighter because it hasn't finished. |
+| Monthly budgets | How much of each budget is used, plus a small mark showing where spending would be if it were spread evenly over the month. "Watch this" means you're ahead of that pace, which can happen well before 80% is gone. |
+| Transactions | Filter by category and dates, sort by date or amount either way, and show 10 to 100 per page. |
+| Hide amounts | One switch hides every rand figure, from screen readers as well as from view. Useful when someone is looking over your shoulder. |
+| Viewing as | A searchable picker for the six demo clients. Type "merwe", "67890" or "premium" and the list narrows as you type. More on it [below](#the-searchable-picker). |
+| Remembered | The period, filters, sort, page size, the client you're viewing and the hide-amounts switch are kept between visits. The figures never are. |
 
 ![Transactions filtered to Dining](docs/screenshots/transactions.png)
 
@@ -80,18 +74,15 @@ waits for it to report healthy (`.github/workflows/ci.yml`).
 
 ## How it is built
 
-**This is a React 19 app.** Every screen is plain React: function components, hooks,
-Redux Toolkit and TanStack Query. Next.js provides three things only:
+This is a React 19 app. Every screen is function components and hooks, with Redux
+Toolkit and TanStack Query for state. Next.js handles the page routing and the production
+server, and it hosts the mock API.
 
-- page routing;
-- the production server;
-- a home for the mock API.
-
-Next-specific code is kept to five imports in four files: `Link` and `usePathname` in
-the shell and two sections, and `Image` in the logo. Moving to Vite with React Router
-means changing those imports; the components, sections, hooks and store move unchanged. The API sits behind one
-setting, `NEXT_PUBLIC_API_BASE`: point it at a real back end and the route handlers in
-`app/api` can be deleted.
+Only five imports in four files are specific to Next: `Link` and `usePathname` in the
+shell and two sections, and `Image` in the logo. Moving to Vite with React Router would
+mean changing those five lines. The components, hooks and store would move as they are.
+The API address is one setting, `NEXT_PUBLIC_API_BASE`. Point it at a real back end and
+the route handlers in `app/api` can go.
 
 ```mermaid
 flowchart LR
@@ -115,10 +106,10 @@ flowchart LR
   RQ -- "GET /api/customers/12345/…<br/>JSON, or 400 / 404 with an error body" --> RH
 ```
 
-Figures live only in TanStack Query's in-memory cache, and only the customer's choices
-are written to the browser.
+Figures stay in TanStack Query's in-memory cache. The only thing written to the browser
+is what the customer chose.
 
-A change of period, step by step:
+Here is what happens when the customer picks a different period:
 
 ```mermaid
 sequenceDiagram
@@ -144,7 +135,7 @@ sequenceDiagram
   S-->>C: new totals and the change vs the previous 90 days
 ```
 
-How the components are layered (each layer only uses the ones below it):
+The components are layered, and each layer only uses the ones below it:
 
 ```mermaid
 flowchart TB
@@ -157,8 +148,9 @@ flowchart TB
   SH --> UI
 ```
 
-Sections are the only layer that fetches. Each one handles its own loading, error and
-empty states, so a failing endpoint breaks one card, not the page.
+Sections are the only layer that fetches data. Each one draws its own loading, error and
+empty states, so if one endpoint fails, one card shows an error and the rest of the page
+carries on.
 
 | | |
 | --- | --- |
@@ -190,14 +182,34 @@ server/                  the mock API's data and logic (runs on the server only)
 e2e/                     Playwright tests
 ```
 
-The choices behind this, and what would change in production, are in
-[docs/DECISIONS.md](docs/DECISIONS.md).
+## What `server/` is for
+
+The brief gives the API's shape but no API, so this project brings its own. `server/`
+holds it, and none of it ever reaches the browser:
+
+- `catalogue.js` has the fixed data: the six demo clients and their budgets, the
+  categories, the merchants, and the debits that recur every month.
+- `ledger.js` generates each client's transactions from that data. It's deterministic,
+  so the same request always gets the same answer, and it works in cents.
+- `spending.js` has one function per endpoint. Each takes the client id, the query and
+  "now", validates them, and returns the response body.
+- `http.js` turns a function's result into an HTTP response, with the status code, the
+  error body and the no-cache header.
+
+The files in `app/api/` are thin: each one reads the request and calls one function from
+`spending.js`. That split is why the API's rules have their own tests that never start a
+server. If Capitec's real API were plugged in, `server/` and `app/api/` would both go and
+the screens wouldn't change.
+
+The reasoning behind all of this, and what would change before real client data went
+near it, is in [docs/DECISIONS.md](docs/DECISIONS.md).
 
 ## The API
 
-`/api/customers/{customerId}/…`. Six demo clients exist. `12345` is the brief's own and
-opens by default. Two show edge states: `11223` joined recently, so there is nothing to
-compare against, and `99887` has no budgets set.
+Every endpoint sits under `/api/customers/{customerId}/`. There are six demo clients.
+`12345` is the one from the brief and opens by default. Two are there to show edge cases:
+`11223` joined recently, so there's no earlier period to compare against, and `99887` has
+no budgets.
 
 | Endpoint | Query |
 | --- | --- |
@@ -210,106 +222,103 @@ compare against, and `99887` has no budgets set.
 | `GET /filters` | |
 | `GET /api/customers` | An addition for the demo picker only; see the Q&A |
 
-Responses follow the brief's shapes. An invalid request is a `400` and an unknown
-customer a `404`, both with a body that says what was wrong:
+Responses use the brief's shapes. A bad request gets a `400` and an unknown client a
+`404`, and both say what was wrong:
 
 ```json
 { "error": { "code": "INVALID_LIMIT", "message": "limit must be a whole number from 1 to 100", "details": { "limit": "500" } } }
 ```
 
-Two environment variables help testing: `MOCK_NOW` pins the API's clock (the end-to-end
-tests use `2026-10-11T12:00:00Z`), and `MOCK_LATENCY_MS` adds a delay so loading states can
-be seen.
+Two environment variables help with testing. `MOCK_NOW` fixes the API's clock (the
+end-to-end tests use `2026-10-11T12:00:00Z`). `MOCK_LATENCY_MS` slows every response down,
+so you can see the loading states.
 
 ## The searchable picker
 
-The header's "Viewing as" control started as a native `<select>`. With more than a
-handful of clients a native select can't be searched, can show only one line per option,
-and draws its arrow hard against the edge, differently in every browser. It is now
-`components/ui/Combobox.jsx`, a reusable component:
+"Viewing as" in the header is `components/ui/Combobox.jsx`, a reusable component. A
+native `<select>` can't be searched and only shows one line per option, which is fine for
+five items and tiring for fifty.
 
-- **Search as you type.** It matches the name, client number or account type, ignoring
-  case and accents ("Zoe" finds "Zoë"), with the words in any order.
-- **Two lines per option:** the name, then the account type and client number, so two
-  clients with similar names can be told apart.
-- **Keyboard first.** It opens with the arrow keys and the search box already focused.
-  Up and down move the highlight, Home and End jump, Enter chooses, Escape closes. Focus
-  returns to the button afterwards, so a keyboard user is never left stranded.
-- **Screen readers.** It follows the WAI-ARIA combobox pattern: the highlighted option is
-  announced as the keys move, and the number of results, including none, is announced
-  as you type.
+Typing narrows the list. It matches the name, the client number or the account type, in
+any order, and ignores case and accents, so "zoe" finds "Zoë". Each option has two lines,
+the name and then the account type and number, so two clients with similar names can be
+told apart.
 
-The remaining dropdowns (category, sort, page size) are short fixed lists, so they stay
-native selects, which phones show as their own pickers. Their arrow is now an icon with
-room around it rather than the browser's default.
+It works fully from the keyboard. The arrow keys open it with the search box already
+focused, up and down move through the results, Home and End jump to either end, Enter
+chooses and Escape closes. Either way, focus goes back to the button. It follows the
+WAI-ARIA combobox pattern, so a screen reader announces each option as you move and
+tells you how many results there are as you type, including when there are none.
+
+The other dropdowns (category, sort, page size) are short fixed lists, so they're native
+selects, and a phone shows its own picker for them. Their arrow is an icon with some room
+around it rather than the browser's default, which sits against the edge.
 
 ## Questions a reviewer might ask
 
 **Why Next.js, when the role asks for React?**
-It is React: every screen is function components and hooks. Next is used for three things
-only (routing, the production server, hosting the mock API), and only five imports are
-Next-specific, so a move to Vite is a small change. See [How it is built](#how-it-is-built).
+Because it is React. Every screen is function components and hooks. Next does the routing,
+runs the server and hosts the mock API, and only five imports depend on it. See
+[How it is built](#how-it-is-built).
 
 **Why is there no sign-in?**
-The brief does not ask for one, and a pretend login with pretend passwords would prove
-nothing. The "Viewing as" picker stands in for it. In production the client would be
-whoever is signed in, decided on the server from the session; the client id would never
-come from the URL or from a list, so nobody could read someone else's account by
-changing a number.
+The brief doesn't ask for one, and a pretend login with pretend passwords wouldn't prove
+much. The "Viewing as" picker stands in for it. In production the client is whoever is
+signed in, and the server works that out from the session. The client id would never come
+from the URL or a list, otherwise anyone could read someone else's account by changing a
+number.
 
 **Why can't I add or edit a transaction?**
-The brief's seven endpoints are all read-only and it asks to *display* spending. A bank
-customer does not create transactions: card payments, debit orders and transfers do.
-Writing them would mean inventing endpoints the spec does not have.
+All seven endpoints in the brief are read-only, and the brief asks to display spending.
+Customers don't create transactions in a bank; card payments, debit orders and transfers
+do. Adding them would mean inventing endpoints the spec doesn't have.
 
 **Why build the API instead of returning the sample JSON?**
-The samples cannot filter, and they disagree with each other (their category shares add
-up to 99.9%). Generated, deterministic data makes every filter real, and lets the tests
+The samples can't be filtered, and they disagree with each other: their category shares
+add up to 99.9%. With generated data every filter does something real, and the tests can
 check that the summary, the categories and the transactions agree to the cent.
 
 **Why both TanStack Query and Redux?**
-They hold different things. TanStack Query holds server data: caching, retries, refetching
-and loading states. Redux holds the client's choices, and only those are persisted.
-Keeping figures out of browser storage is deliberate: stale balances are worse than a
-loading skeleton, and account data does not belong in localStorage.
+They hold different things. TanStack Query holds whatever came from the server, and
+handles caching, retries, refetching and loading. Redux holds what the customer chose,
+and that's the only thing saved to the browser. Keeping figures out of browser storage is
+on purpose. A stale balance is worse than a loading skeleton, and account data has no
+business sitting in localStorage.
 
 **Why are amounts in cents?**
-Floating-point rands drift (`0.1 + 0.2 !== 0.3`). Everything is added up in whole cents
-and converted only at the edge.
+Floating-point rands drift (`0.1 + 0.2 !== 0.3`). Everything is added up in whole cents,
+and only turned into rands when the response is written.
 
 **Why Victory for the charts?**
-It is React-first (charts are components, composed like the rest of the UI), renders SVG,
-and is easy to theme to the Capitec palette. The charts are hidden from screen readers
-because the same figures are always on screen as text: the list beside the donut, and the
-trend's table view.
+Its charts are React components, built up the same way as the rest of the UI. It draws
+SVG and was easy to theme in Capitec's colours. The charts are hidden from screen readers
+because the same figures are always on screen as text, in the list beside the donut and
+the trend's table view.
 
 **How is it tested?**
-Three layers: the API's rules in plain unit tests; components and sections rendered
-against the real API logic with Testing Library; and Playwright in a real browser on
-desktop and phone, including axe accessibility scans. The Docker image will not build if
-lint or the unit tests fail, and CI runs everything on every push.
+In three layers. Plain unit tests cover the API's rules. Testing Library renders the
+components and sections against the real API logic. Playwright drives a real browser at
+desktop and phone sizes and runs axe accessibility scans. The Docker image won't build if
+lint or the unit tests fail, and CI runs the lot on every push.
 
 **How does it behave on a slow or failing network?**
-Each section has its own loading skeleton, error message and "Try again" button, so a
-failing endpoint breaks one card, not the page. Failed requests are retried twice, but a
-`4xx` is not, since retrying a bad request only delays the message. Set
-`MOCK_LATENCY_MS=1500` to see the loading states.
+Each section has its own loading skeleton, error message and "Try again" button, so one
+failing endpoint leaves the rest of the page working. A failed request is retried twice.
+A `4xx` isn't retried, because asking again won't change the answer and only delays the
+message. Set `MOCK_LATENCY_MS=1500` to watch the loading states.
 
 **Is it accessible?**
-It is built to WCAG 2 AA and scanned with axe in the end-to-end tests. Specifically:
-- every control works from the keyboard;
-- status is always given in words as well as colour;
-- the brief's pastel category colours are used as tints, never as text;
-- "Hide amounts" hides figures from screen readers too, not only from view.
+It's built to WCAG 2 AA, and the end-to-end tests scan both pages with axe. Every control
+works from the keyboard. Status is always written in words as well as shown in colour. The
+brief's category colours are pastels, so they're used as tints behind dark icons rather
+than as text. And "Hide amounts" hides figures from screen readers too.
 
 **What would you do with more time?**
-- Sign-in, with the client taken from the session on the server.
-- A nonce-based content security policy, to remove `'unsafe-inline'`.
-- Prefetching the first view's data on the server, so there are no skeletons on first load.
-- An error boundary per section.
-- Error monitoring.
-
-These are in [docs/DECISIONS.md](docs/DECISIONS.md).
+Sign-in first, with the client taken from the session on the server. Then a content
+security policy based on nonces, so scripts no longer need `'unsafe-inline'`. I'd prefetch
+the first view's data on the server so the page arrives filled in, give each section its
+own error boundary, and add error monitoring. There's more detail in
+[docs/DECISIONS.md](docs/DECISIONS.md).
 
 ---
 

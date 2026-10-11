@@ -104,3 +104,35 @@ test("a customer with no budgets sees the empty state, not an empty card", async
   await page.keyboard.press("Enter");
   await expect(page.getByText("No budgets set")).toBeVisible();
 });
+
+test("everything clickable shows a pointer, and a disabled button does not", async ({ page }) => {
+  await page.goto("/transactions");
+  await expect(page.getByText(/^1–20 of/)).toBeVisible();
+  const cursor = (loc) => loc.evaluate((el) => getComputedStyle(el).cursor);
+  expect(await cursor(page.getByRole("button", { name: "Next page" }))).toBe("pointer");
+  expect(await cursor(page.getByRole("button", { name: /viewing as/i }))).toBe("pointer");
+  expect(await cursor(page.getByLabel("Sort by"))).toBe("pointer");
+  expect(await cursor(page.getByRole("link", { name: "Overview" }))).toBe("pointer");
+  expect(await cursor(page.getByRole("button", { name: "Previous page" }))).toBe("not-allowed");
+});
+
+test("clicking a slice of the donut opens that category's transactions", async ({ page, isMobile }) => {
+  await page.goto("/");
+  const first = page.getByRole("list", { name: "Spending by category" }).getByRole("link").first();
+  const name = (await first.locator("span.truncate").innerText()).trim();
+  // The first slice is the largest category, drawn clockwise from twelve o'clock. Aim
+  // at a point on the ring just past twelve: the centre of a curved slice's bounding box
+  // usually falls in the donut's hole.
+  const chart = page.locator("figure svg").first();
+  await expect(chart).toBeVisible();
+  // On a phone the donut is below the fold.
+  await chart.scrollIntoViewIfNeeded();
+  const box = await chart.boundingBox();
+  const r = box.width * 0.37;
+  const angle = (15 * Math.PI) / 180;
+  const x = box.x + box.width / 2 + r * Math.sin(angle);
+  const y = box.y + box.height / 2 - r * Math.cos(angle);
+  if (isMobile) await page.touchscreen.tap(x, y); else await page.mouse.click(x, y);
+  await expect(page).toHaveURL(/\/transactions$/);
+  await expect(page.getByLabel("Category")).toHaveValue(name);
+});

@@ -39,6 +39,23 @@ body { background: var(--color-canvas); color: var(--color-ink); font-family: va
    can replace it with a utility class: unlayered CSS outranks every Tailwind utility. */
 @layer base {
   :focus-visible { outline: 2px solid var(--color-sky); outline-offset: 2px; border-radius: 6px; }
+
+  /* Tailwind 4 resets buttons to the default arrow cursor. Anything that does something
+     when clicked gets the pointer back; anything disabled says so. */
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]),
+  [role="option"],
+  [role="radio"],
+  select:not(:disabled),
+  label[for],
+  input[type="date"]::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+  }
+  button:disabled,
+  select:disabled,
+  [aria-disabled="true"] {
+    cursor: not-allowed;
+  }
 }
 
 @keyframes shimmer { 0% { background-position: -400px 0; } 100% { background-position: 400px 0; } }

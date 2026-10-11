@@ -7,6 +7,7 @@
  */
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { TbChartPie } from "react-icons/tb";
 import { useCategories } from "@/utils/hooks/useSpendingApi";
@@ -26,6 +27,14 @@ export default function CategoryBreakdown() {
   const args = customRange ? { customerId, ...customRange } : { customerId, period };
   const { data, isLoading, isFetching, isError, error, refetch } = useCategories(args);
   const [active, setActive] = useState(null);
+  const router = useRouter();
+
+  // The list's rows and the donut's slices both open a category's transactions, filtered
+  // to the same dates as this breakdown.
+  const openCategory = (name) => {
+    dispatch(setTransactionFilter({ category: name, startDate: data.dateRange.startDate, endDate: data.dateRange.endDate }));
+    router.push("/transactions");
+  };
 
   const subtitle = data ? `${formatDay(data.dateRange.startDate)} – ${formatDay(data.dateRange.endDate)}` : " ";
   return (
@@ -40,7 +49,7 @@ export default function CategoryBreakdown() {
       ) : (
         <div className={`grid items-center gap-6 md:grid-cols-[240px_1fr] ${isFetching ? "opacity-60 transition-opacity" : ""}`}>
           <div className="mx-auto w-full max-w-[240px]">
-            <CategoryDonut categories={data.categories} total={data.totalAmount} activeName={active} onActive={setActive} />
+            <CategoryDonut categories={data.categories} total={data.totalAmount} activeName={active} onActive={setActive} onSelect={openCategory} />
           </div>
           <ul className="divide-y divide-hair" aria-label="Spending by category">
             {data.categories.map((c) => (

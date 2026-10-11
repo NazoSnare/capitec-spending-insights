@@ -15,7 +15,8 @@ import TransactionFilters from "@/components/sections/TransactionFilters";
 import PeriodToolbar, { rangeProblem } from "@/components/sections/PeriodToolbar";
 import { formatZAR } from "@/utils/lib/format";
 
-vi.mock("next/navigation", () => ({ usePathname: () => "/" }));
+const push = vi.fn();
+vi.mock("next/navigation", () => ({ usePathname: () => "/", useRouter: () => ({ push }) }));
 
 beforeEach(() => { vi.useFakeTimers({ toFake: ["Date"] }); vi.setSystemTime(NOW); });
 afterEach(() => { vi.useRealTimers(); vi.unstubAllGlobals(); });
