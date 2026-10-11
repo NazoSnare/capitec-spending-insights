@@ -1,0 +1,47 @@
+@import "tailwindcss";
+
+/* Capitec's palette: the navy and red of the logo, with a light blue for interface
+   highlights. Red is kept for the brand mark and for "over budget"; using it for
+   ordinary emphasis would make every highlight read as a warning. */
+@theme {
+  --color-navy: #00486d;
+  --color-navy-deep: #003550;
+  --color-sky: #009de0;
+  --color-sky-soft: #e6f5fc;
+  --color-brand-red: #e63934;
+
+  --color-canvas: #f3f6f9;
+  --color-card: #ffffff;
+  --color-card-muted: #f7f9fb;
+  --color-ink: #0f1d2a;
+  --color-ink-2: #44546a;
+  --color-ink-3: #5d6d81; /* 4.9:1 on the canvas; #66768a was 4.3:1 and failed WCAG AA */
+  --color-hair: rgba(15, 29, 42, 0.08);
+
+  --color-ok: #127a46;
+  --color-ok-bg: #e7f5ed;
+  --color-warn: #9a5800;
+  --color-warn-bg: #fdf3e2;
+  --color-bad: #b42318;
+  --color-bad-bg: #fdecea;
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --radius-card: 18px;
+}
+
+html { -webkit-text-size-adjust: 100%; }
+body { background: var(--color-canvas); color: var(--color-ink); font-family: var(--font-sans); }
+
+/* Figures line up in columns. */
+.num { font-variant-numeric: tabular-nums; }
+
+/* Visible focus for keyboard users, in the brand blue. */
+:focus-visible { outline: 2px solid var(--color-sky); outline-offset: 2px; border-radius: 6px; }
+
+@keyframes shimmer { 0% { background-position: -400px 0; } 100% { background-position: 400px 0; } }
+.skeleton {
+  background: linear-gradient(90deg, #eef2f6 0%, #f7f9fb 50%, #eef2f6 100%);
+  background-size: 800px 100%;
+  animation: shimmer 1.3s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) { .skeleton { animation: none; } }
