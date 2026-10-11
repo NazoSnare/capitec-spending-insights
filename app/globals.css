@@ -29,7 +29,10 @@
   --radius-card: 18px;
 }
 
-html { -webkit-text-size-adjust: 100%; }
+/* Smooth scrolling everywhere (skip links, paging, scrolling to the top on a new page),
+   except for people who have asked their device to reduce motion. */
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 body { background: var(--color-canvas); color: var(--color-ink); font-family: var(--font-sans); }
 
 /* Figures line up in columns. */

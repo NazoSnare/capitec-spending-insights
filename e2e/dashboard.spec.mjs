@@ -136,3 +136,15 @@ test("clicking a slice of the donut opens that category's transactions", async (
   await expect(page).toHaveURL(/\/transactions$/);
   await expect(page.getByLabel("Category")).toHaveValue(name);
 });
+
+test("opening a category from far down the overview starts the new page at the top", async ({ page }) => {
+  await page.goto("/");
+  const row = page.getByRole("list", { name: "Spending by category" }).getByRole("link").first();
+  await row.scrollIntoViewIfNeeded();
+  await page.evaluate(() => window.scrollBy(0, 300));
+  expect(await page.evaluate(() => window.scrollY)).toBeGreaterThan(0);
+  await row.click();
+  await expect(page).toHaveURL(/\/transactions$/);
+  await expect.poll(() => page.evaluate(() => window.scrollY), { timeout: 3000 }).toBe(0);
+  await expect(page.getByRole("heading", { name: "Transactions", level: 1 })).toBeInViewport();
+});

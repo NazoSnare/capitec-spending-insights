@@ -12,6 +12,7 @@ import { TbEye, TbEyeOff, TbUserCircle } from "react-icons/tb";
 import Logo from "@/components/shared/Logo";
 import Combobox from "@/components/ui/Combobox";
 import { useCustomers } from "@/utils/hooks/useSpendingApi";
+import useScrollToTopOnNavigate from "@/utils/hooks/useScrollToTopOnNavigate";
 import { humanise } from "@/utils/lib/format";
 import { selectPrefs, setCustomer, toggleHideAmounts } from "@/utils/store/preferencesSlice";
 
@@ -22,6 +23,7 @@ const NAV = [
 
 export default function AppShell({ children }) {
   const path = usePathname();
+  useScrollToTopOnNavigate();
   const dispatch = useDispatch();
   const { customerId, hideAmounts } = useSelector(selectPrefs);
   const { data } = useCustomers();

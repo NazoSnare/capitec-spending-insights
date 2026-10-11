@@ -53,7 +53,7 @@ and waits for the health check to pass (`.github/workflows/ci.yml`).
 | --- | --- |
 | API (29 tests) | every endpoint; validation and error codes; the endpoints agreeing with each other to the cent; percentages adding to 100; budget pace; 404s; no internal fields leaked |
 | Front end (37 tests) | formatting; the preferences slice and what it persists; components (the searchable picker's keyboard and screen-reader behaviour, the period switch, hidden amounts, progress, paging); sections rendered against the real API logic, including failure and retry |
-| End to end (26 runs) | the overview, period changes surviving a reload, hiding amounts, switching customer by searching, a customer with no budgets, a category row and a donut slice each opening their transactions, paging and sorting, the table view, pointer cursors, no sideways scroll, and an axe WCAG 2 AA scan of both pages, each on desktop and phone |
+| End to end (28 runs) | the overview, period changes surviving a reload, hiding amounts, switching customer by searching, a customer with no budgets, a category row and a donut slice each opening their transactions, a new page starting at the top, paging and sorting, the table view, pointer cursors, no sideways scroll, and an axe WCAG 2 AA scan of both pages, each on desktop and phone |
 
 ## What it does
 
