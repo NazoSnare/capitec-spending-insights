@@ -5,6 +5,9 @@ It covers spending by category, the trend month by month, budgets, and every
 transaction. It is my submission for the Software Engineer (Front-End) take-home,
 project 1: Customer Spending Insights Dashboard.
 
+**Live: [capitecinsights.zizian.co.za](https://capitecinsights.zizian.co.za)**. It's the
+same Docker image this repository builds, with figures as of today.
+
 ![The overview](docs/screenshots/overview.png)
 
 All of the data is made up. The mock API implements the seven endpoints in
@@ -31,6 +34,20 @@ Or locally, with Node 20.9 or newer:
 npm ci
 npm run dev        # http://localhost:3000, with hot reload
 ```
+
+### The live deployment
+
+The live site runs this repository's Dockerfile, unchanged, on a Linux server:
+
+- the image is built from `main` and run with `--restart unless-stopped`, so it comes
+  back after a reboot, and with a 512 MB memory cap (it uses about 40 MB);
+- the container listens only on the server's loopback address, behind nginx, which
+  terminates HTTPS with a Let's Encrypt certificate and redirects plain HTTP;
+- the app's own security headers (content security policy, no framing and the rest)
+  pass through nginx untouched.
+
+Updating it is a pull, a `docker build` and a container restart. The image is the
+one CI builds and health-checks on every push.
 
 ## Test it
 
