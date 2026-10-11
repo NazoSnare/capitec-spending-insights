@@ -9,8 +9,8 @@
  */
 import { VictoryPie, VictoryTooltip, VictoryLabel } from "victory";
 import { useSelector } from "react-redux";
-import { selectHideAmounts } from "@/store/preferencesSlice";
-import { formatZAR } from "@/lib/format";
+import { selectHideAmounts } from "@/utils/store/preferencesSlice";
+import { formatZAR } from "@/utils/lib/format";
 import { FONT, tooltipStyle } from "./chartTheme";
 
 export default function CategoryDonut({ categories, total, size = 240, activeName, onActive }) {

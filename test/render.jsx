@@ -8,8 +8,8 @@ import { render } from "@testing-library/react";
 import { Provider } from "react-redux";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { vi } from "vitest";
-import { makeStore } from "@/store";
-import { initialState } from "@/store/preferencesSlice";
+import { makeStore } from "@/utils/store";
+import { initialState } from "@/utils/store/preferencesSlice";
 import * as spending from "@/server/spending";
 
 export const NOW = new Date("2026-10-11T12:00:00Z");

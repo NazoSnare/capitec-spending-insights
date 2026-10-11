@@ -3,7 +3,7 @@
  *
  * TanStack Query owns server state: loading, errors, retries, caching and refetching
  * when the customer returns to the tab. Redux owns client state (the preferences, in
- * store/). The split is deliberate: figures are never persisted to the browser,
+ * utils/store/). The split is deliberate: figures are never persisted to the browser,
  * because yesterday's spending shown as today's is worse than a loading skeleton.
  *
  * Query keys start with the customer id, so switching customer can never show one
@@ -11,9 +11,10 @@
  * ["customer", id] })` refreshes everything for one customer at once.
  */
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import { apiGet } from "@/lib/apiClient";
+import { apiGet } from "@/utils/lib/apiClient";
 
 export const keys = {
+  customers: () => ["customers"],
   all: (customerId) => ["customer", customerId],
   profile: (customerId) => ["customer", customerId, "profile"],
   summary: (customerId, period) => ["customer", customerId, "summary", { period }],
@@ -64,3 +65,7 @@ export const useGoals = (customerId) =>
 /** The filter options hardly ever change, so they are kept fresh for longer. */
 export const useFilters = (customerId) =>
   useQuery({ queryKey: keys.filters(customerId), queryFn: ({ signal }) => apiGet(`${base(customerId)}/filters`, null, signal), staleTime: 10 * 60_000 });
+
+/** The demo customers for the "Viewing as" picker (not in the brief; see app/api/customers). */
+export const useCustomers = () =>
+  useQuery({ queryKey: keys.customers(), queryFn: ({ signal }) => apiGet("customers", null, signal), staleTime: Infinity });

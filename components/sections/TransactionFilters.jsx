@@ -6,8 +6,8 @@
  */
 import { useDispatch, useSelector } from "react-redux";
 import { TbRefresh } from "react-icons/tb";
-import { useFilters } from "@/hooks/useSpendingApi";
-import { resetTransactionFilters, selectPrefs, setTransactionFilter } from "@/store/preferencesSlice";
+import { useFilters } from "@/utils/hooks/useSpendingApi";
+import { resetTransactionFilters, selectPrefs, setTransactionFilter } from "@/utils/store/preferencesSlice";
 import Select from "@/components/ui/Select";
 import DateField from "@/components/ui/DateField";
 import Button from "@/components/ui/Button";

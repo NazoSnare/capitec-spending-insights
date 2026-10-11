@@ -1,7 +1,7 @@
 import { Inter } from "next/font/google";
 import "./globals.css";
-import Providers from "./providers";
-import AppShell from "@/containers/AppShell";
+import Providers from "@/utils/providers/AppProviders";
+import AppShell from "@/components/containers/AppShell";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
 

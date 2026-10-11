@@ -3,16 +3,16 @@
 /** The full, filtered, paged list of transactions. */
 import { useDispatch, useSelector } from "react-redux";
 import { TbSearchOff } from "react-icons/tb";
-import { useTransactions } from "@/hooks/useSpendingApi";
-import { errorMessage } from "@/lib/apiClient";
-import { resetTransactionFilters, selectPrefs, setTransactionFilter, setTransactionPage } from "@/store/preferencesSlice";
+import { useTransactions } from "@/utils/hooks/useSpendingApi";
+import { errorMessage } from "@/utils/lib/apiClient";
+import { resetTransactionFilters, selectPrefs, setTransactionFilter, setTransactionPage } from "@/utils/store/preferencesSlice";
 import Card from "@/components/ui/Card";
 import Select from "@/components/ui/Select";
 import Pagination from "@/components/ui/Pagination";
 import Skeleton from "@/components/ui/Skeleton";
 import Button from "@/components/ui/Button";
 import { ErrorBlock, EmptyBlock } from "@/components/ui/States";
-import TransactionRow from "@/components/TransactionRow";
+import TransactionRow from "@/components/shared/TransactionRow";
 
 export default function TransactionList() {
   const dispatch = useDispatch();

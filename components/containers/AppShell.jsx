@@ -8,24 +8,30 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
-import { TbEye, TbEyeOff } from "react-icons/tb";
-import Logo from "@/components/Logo";
-import { selectPrefs, setCustomer, toggleHideAmounts } from "@/store/preferencesSlice";
+import { TbEye, TbEyeOff, TbUserCircle } from "react-icons/tb";
+import Logo from "@/components/shared/Logo";
+import Combobox from "@/components/ui/Combobox";
+import { useCustomers } from "@/utils/hooks/useSpendingApi";
+import { humanise } from "@/utils/lib/format";
+import { selectPrefs, setCustomer, toggleHideAmounts } from "@/utils/store/preferencesSlice";
 
 const NAV = [
   { href: "/", label: "Overview" },
   { href: "/transactions", label: "Transactions" },
 ];
 
-const CUSTOMERS = [
-  { id: "12345", label: "Thandiwe Mokoena" },
-  { id: "67890", label: "Sipho Dlamini" },
-];
-
 export default function AppShell({ children }) {
   const path = usePathname();
   const dispatch = useDispatch();
   const { customerId, hideAmounts } = useSelector(selectPrefs);
+  const { data } = useCustomers();
+  // Until the list arrives the picker still names the current customer by id.
+  const customers = data?.customers?.map((c) => ({
+    value: c.customerId,
+    label: c.name,
+    description: `${humanise(c.accountType)} · client ${c.customerId}`,
+    keywords: c.accountType,
+  })) || [{ value: customerId, label: `Client ${customerId}` }];
 
   return (
     <div className="min-h-screen">
@@ -36,15 +42,17 @@ export default function AppShell({ children }) {
         <div className="mx-auto flex max-w-[1240px] flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6">
           <Link href="/" aria-label="Spending Insights home"><Logo inverse /></Link>
           <div className="flex items-center gap-2">
-            <label className="sr-only" htmlFor="customer">Customer</label>
-            <select
-              id="customer"
+            {/* Demo only: a real app shows the signed-in client and has no such list. */}
+            <Combobox
+              tone="dark"
+              icon={TbUserCircle}
+              label="Viewing as"
+              options={customers}
               value={customerId}
-              onChange={(e) => dispatch(setCustomer(e.target.value))}
-              className="h-9 max-w-[180px] rounded-full border border-white/25 bg-white/10 px-3 text-[13.5px] font-medium text-white outline-none focus:border-white"
-            >
-              {CUSTOMERS.map((c) => <option key={c.id} value={c.id} className="text-ink">{c.label}</option>)}
-            </select>
+              onChange={(id) => dispatch(setCustomer(id))}
+              searchPlaceholder="Search by name, id or account"
+              emptyText="No client matches"
+            />
             <button
               type="button"
               onClick={() => dispatch(toggleHideAmounts())}

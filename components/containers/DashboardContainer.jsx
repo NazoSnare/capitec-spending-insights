@@ -1,13 +1,13 @@
 "use client";
 
 /** The overview: who, the period, the four figures, then the detail sections. */
-import ProfileHeader from "@/sections/ProfileHeader";
-import PeriodToolbar from "@/sections/PeriodToolbar";
-import SummaryCards from "@/sections/SummaryCards";
-import CategoryBreakdown from "@/sections/CategoryBreakdown";
-import TrendSection from "@/sections/TrendSection";
-import GoalsSection from "@/sections/GoalsSection";
-import RecentTransactions from "@/sections/RecentTransactions";
+import ProfileHeader from "@/components/sections/ProfileHeader";
+import PeriodToolbar from "@/components/sections/PeriodToolbar";
+import SummaryCards from "@/components/sections/SummaryCards";
+import CategoryBreakdown from "@/components/sections/CategoryBreakdown";
+import TrendSection from "@/components/sections/TrendSection";
+import GoalsSection from "@/components/sections/GoalsSection";
+import RecentTransactions from "@/components/sections/RecentTransactions";
 
 export default function DashboardContainer() {
   return (

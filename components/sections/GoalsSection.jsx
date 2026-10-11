@@ -7,9 +7,9 @@
  */
 import { useSelector } from "react-redux";
 import { TbAlertTriangle, TbCircleCheck, TbCircleX, TbTarget } from "react-icons/tb";
-import { useGoals } from "@/hooks/useSpendingApi";
-import { errorMessage } from "@/lib/apiClient";
-import { selectCustomerId } from "@/store/preferencesSlice";
+import { useGoals } from "@/utils/hooks/useSpendingApi";
+import { errorMessage } from "@/utils/lib/apiClient";
+import { selectCustomerId } from "@/utils/store/preferencesSlice";
 import Card from "@/components/ui/Card";
 import Badge from "@/components/ui/Badge";
 import Money from "@/components/ui/Money";

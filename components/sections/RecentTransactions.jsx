@@ -4,13 +4,13 @@
 import Link from "next/link";
 import { useDispatch, useSelector } from "react-redux";
 import { TbArrowRight, TbReceipt } from "react-icons/tb";
-import { useTransactions } from "@/hooks/useSpendingApi";
-import { errorMessage } from "@/lib/apiClient";
-import { resetTransactionFilters, selectCustomerId } from "@/store/preferencesSlice";
+import { useTransactions } from "@/utils/hooks/useSpendingApi";
+import { errorMessage } from "@/utils/lib/apiClient";
+import { resetTransactionFilters, selectCustomerId } from "@/utils/store/preferencesSlice";
 import Card from "@/components/ui/Card";
 import Skeleton from "@/components/ui/Skeleton";
 import { ErrorBlock, EmptyBlock } from "@/components/ui/States";
-import TransactionRow from "@/components/TransactionRow";
+import TransactionRow from "@/components/shared/TransactionRow";
 
 export default function RecentTransactions({ count = 6 }) {
   const dispatch = useDispatch();

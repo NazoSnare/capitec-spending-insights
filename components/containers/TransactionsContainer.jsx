@@ -1,8 +1,8 @@
 "use client";
 
 /** Every transaction, filterable. */
-import TransactionFilters from "@/sections/TransactionFilters";
-import TransactionList from "@/sections/TransactionList";
+import TransactionFilters from "@/components/sections/TransactionFilters";
+import TransactionList from "@/components/sections/TransactionList";
 
 export default function TransactionsContainer() {
   return (

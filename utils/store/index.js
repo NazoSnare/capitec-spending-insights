@@ -1,7 +1,7 @@
 /**
  * The Redux store: the customer's preferences, persisted to the browser.
  *
- * Server data is not in Redux at all; TanStack Query holds it (hooks/useSpendingApi.js).
+ * Server data is not in Redux at all; TanStack Query holds it (utils/hooks/useSpendingApi.js).
  * So the store is small, persisting it is safe, and nothing financial is ever written
  * to localStorage.
  *

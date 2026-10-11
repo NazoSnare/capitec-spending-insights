@@ -3,14 +3,14 @@
 /** Who this is: the greeting, the account and what they have spent since joining. */
 import { TbRosetteDiscountCheck } from "react-icons/tb";
 import { useSelector } from "react-redux";
-import { useProfile } from "@/hooks/useSpendingApi";
-import { errorMessage } from "@/lib/apiClient";
-import { selectCustomerId } from "@/store/preferencesSlice";
+import { useProfile } from "@/utils/hooks/useSpendingApi";
+import { errorMessage } from "@/utils/lib/apiClient";
+import { selectCustomerId } from "@/utils/store/preferencesSlice";
 import Badge from "@/components/ui/Badge";
 import Money from "@/components/ui/Money";
 import Skeleton from "@/components/ui/Skeleton";
 import { ErrorBlock } from "@/components/ui/States";
-import { formatDay, humanise } from "@/lib/format";
+import { formatDay, humanise } from "@/utils/lib/format";
 
 const greeting = (h = new Date().getHours()) => (h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : "Good evening");
 

@@ -60,9 +60,14 @@ Built in layers:
 
 - `components/ui`: generic pieces with no knowledge of spending.
 - `components/charts`: the two Victory charts.
-- `sections`: each fetches its own data and handles its own loading, error and empty
-  states.
-- `containers`: arrange the sections into a page.
+- `components/shared`: small spending-specific pieces used in more than one place.
+- `components/sections`: each fetches its own data and handles its own loading, error
+  and empty states.
+- `components/containers`: arrange the sections into a page.
+
+Everything that is not a component lives in `utils/`: hooks, the Redux store, the
+providers and plain helpers. `server/` is kept apart because it only ever runs on the
+server, and nothing in the browser bundle may import it.
 
 Every section shows a skeleton while loading, says what went wrong with a "Try again"
 button on failure, and says what to do when there is nothing to show.

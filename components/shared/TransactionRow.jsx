@@ -4,8 +4,8 @@
  * so both read the same.
  */
 import CategoryIcon from "./CategoryIcon";
-import Money from "./ui/Money";
-import { formatDate } from "@/lib/format";
+import Money from "@/components/ui/Money";
+import { formatDate } from "@/utils/lib/format";
 
 export default function TransactionRow({ t, compact = false }) {
   return (

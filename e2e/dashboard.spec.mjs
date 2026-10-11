@@ -85,3 +85,22 @@ for (const path of ["/", "/transactions"]) {
     expect(serious.map((v) => `${v.id}: ${v.nodes.length} × ${v.help}`)).toEqual([]);
   });
 }
+
+test("switching customer by searching", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("Thandiwe");
+  await page.getByRole("button", { name: /viewing as/i }).click();
+  await page.getByRole("combobox", { name: /search viewing as/i }).fill("merwe");
+  await expect(page.getByRole("option")).toHaveCount(1);
+  await page.keyboard.press("Enter");
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("Pieter");
+  await expect(page.getByRole("button", { name: /viewing as: pieter/i })).toBeFocused();
+});
+
+test("a customer with no budgets sees the empty state, not an empty card", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: /viewing as/i }).click();
+  await page.getByRole("combobox").fill("fatima");
+  await page.keyboard.press("Enter");
+  await expect(page.getByText("No budgets set")).toBeVisible();
+});

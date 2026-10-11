@@ -50,9 +50,9 @@ waits for it to report healthy (`.github/workflows/ci.yml`).
 
 | | What is covered |
 | --- | --- |
-| API (28 tests) | every endpoint; validation and error codes; the endpoints agreeing with each other to the cent; percentages adding to 100; budget pace; 404s; no internal fields leaked |
-| Front end (29 tests) | formatting; the preferences slice and what it persists; components (keyboard use of the period switch, hidden amounts, progress, paging); sections rendered against the real API logic, including failure and retry |
-| End to end (18 runs) | the overview, period changes surviving a reload, hiding amounts, a category opening its transactions, paging and sorting, the table view, no sideways scroll, and an axe WCAG 2 AA scan of both pages, each on desktop and phone |
+| API (29 tests) | every endpoint; validation and error codes; the endpoints agreeing with each other to the cent; percentages adding to 100; budget pace; 404s; no internal fields leaked |
+| Front end (37 tests) | formatting; the preferences slice and what it persists; components (the searchable picker's keyboard and screen-reader behaviour, the period switch, hidden amounts, progress, paging); sections rendered against the real API logic, including failure and retry |
+| End to end (22 runs) | the overview, period changes surviving a reload, hiding amounts, switching customer by searching, a customer with no budgets, a category opening its transactions, paging and sorting, the table view, no sideways scroll, and an axe WCAG 2 AA scan of both pages, each on desktop and phone |
 
 ## What it does
 
@@ -67,8 +67,12 @@ waits for it to report healthy (`.github/workflows/ci.yml`).
 - **Transactions**: filter by category and dates, sort four ways, 10 to 100 per page.
 - **Hide amounts**: one switch replaces every rand figure on screen and for screen readers,
   for when someone is looking over your shoulder.
-- **Remembered**: the period, filters, sort, page size and the hide-amounts switch are kept
-  between visits. Figures never are.
+- **Viewing as**: a searchable picker to switch between the six demo clients. Type part
+  of a name, a client number or an account type ("merwe", "67890", "premium") and the
+  list narrows as you type, with the match highlighted. It works fully from the keyboard
+  (arrows, Enter, Escape) and with a screen reader. See [The searchable picker](#the-searchable-picker).
+- **Remembered**: the period, filters, sort, page size, the client being viewed and the
+  hide-amounts switch are kept between visits. Figures never are.
 
 ![Transactions filtered to Dining](docs/screenshots/transactions.png)
 
@@ -93,7 +97,7 @@ setting, `NEXT_PUBLIC_API_BASE`: point it at a real back end and the route handl
 flowchart LR
   subgraph Browser
     direction TB
-    UI["React components<br/>containers → sections → components"]
+    UI["React components<br/>components/containers → sections → ui"]
     RQ["TanStack Query<br/>server state: cache, retries, refetch"]
     RX["Redux Toolkit<br/>preferences"]
     LS[("localStorage<br/>preferences only")]
@@ -144,12 +148,12 @@ How the components are layered (each layer only uses the ones below it):
 
 ```mermaid
 flowchart TB
-  P["app/ (routes)<br/>page.js · transactions/page.js"] --> CO["containers/<br/>AppShell · DashboardContainer · TransactionsContainer"]
-  CO --> SE["sections/<br/>SummaryCards · CategoryBreakdown · TrendSection<br/>GoalsSection · RecentTransactions · TransactionList …"]
+  P["app/ (routes)<br/>page.js · transactions/page.js"] --> CO["components/containers/<br/>AppShell · DashboardContainer · TransactionsContainer"]
+  CO --> SE["components/sections/<br/>SummaryCards · CategoryBreakdown · TrendSection<br/>GoalsSection · RecentTransactions · TransactionList …"]
   SE --> CH["components/charts/<br/>CategoryDonut · SpendingTrendChart (Victory)"]
-  SE --> SH["components/<br/>TransactionRow · CategoryIcon · Logo"]
-  SE --> HK["hooks/ and store/<br/>data and preferences"]
-  CH --> UI["components/ui/<br/>Card · StatCard · Button · Badge · Money · Delta<br/>SegmentedControl · Select · DateField · ProgressBar<br/>Pagination · States · Skeleton"]
+  SE --> SH["components/shared/<br/>TransactionRow · CategoryIcon · Logo"]
+  SE --> HK["utils/hooks and utils/store<br/>data and preferences"]
+  CH --> UI["components/ui/<br/>Card · StatCard · Button · Badge · Money · Delta<br/>SegmentedControl · Select · Combobox · DateField<br/>ProgressBar · Pagination · States · Skeleton"]
   SH --> UI
 ```
 
@@ -159,7 +163,7 @@ empty states, so a failing endpoint breaks one card, not the page.
 | | |
 | --- | --- |
 | Framework | Next.js 16 (App Router), React 19, JavaScript |
-| Server state | TanStack Query: one hook per endpoint (`hooks/useSpendingApi.js`) |
+| Server state | TanStack Query: one hook per endpoint (`utils/hooks/useSpendingApi.js`) |
 | Client state | Redux Toolkit, with redux-persist saving the preferences to localStorage |
 | Charts | Victory |
 | Icons | react-icons (the Tabler set) |
@@ -168,17 +172,22 @@ empty states, so a failing endpoint breaks one card, not the page.
 | Tests | Vitest, Testing Library, Playwright, axe-core |
 
 ```
-app/            routes: the two pages and the seven API endpoints
-containers/     one per page, plus the app shell; they arrange sections
-sections/       the dashboard's parts (summary, categories, trend, budgets, lists)
-components/     reusable pieces: ui/ (Card, StatCard, Button, Badge, Money, Delta,
-                SegmentedControl, Select, DateField, ProgressBar, Pagination, States),
-                charts/, and a few shared rows and icons
-hooks/          the API hooks and useElementWidth
-store/          the Redux store and the preferences slice
-lib/            formatting, periods, the HTTP client and the query client
-server/         the mock data and the endpoint logic, with their tests
-e2e/            Playwright tests
+app/                     routes only: the two pages and the API endpoints
+components/
+  ui/                    generic pieces: Card, StatCard, Button, Badge, Money, Delta,
+                         SegmentedControl, Select, Combobox, DateField, ProgressBar,
+                         Pagination, States, Skeleton
+  charts/                CategoryDonut and SpendingTrendChart (Victory)
+  shared/                TransactionRow, CategoryIcon, Logo
+  sections/              the dashboard's parts; each fetches its own data
+  containers/            one per page, plus the app shell; they arrange sections
+utils/
+  hooks/                 useSpendingApi (one hook per endpoint), useElementWidth
+  store/                 the Redux store and the preferences slice
+  providers/             AppProviders: Redux, redux-persist and TanStack Query
+  lib/                   formatting, periods, the HTTP client and the query client
+server/                  the mock API's data and logic (runs on the server only)
+e2e/                     Playwright tests
 ```
 
 The choices behind this, and what would change in production, are in
@@ -186,8 +195,9 @@ The choices behind this, and what would change in production, are in
 
 ## The API
 
-`/api/customers/{customerId}/…`. Two customers exist: `12345` (as in the brief) and
-`67890`.
+`/api/customers/{customerId}/…`. Six demo clients exist. `12345` is the brief's own and
+opens by default. Two show edge states: `11223` joined recently, so there is nothing to
+compare against, and `99887` has no budgets set.
 
 | Endpoint | Query |
 | --- | --- |
@@ -198,6 +208,7 @@ The choices behind this, and what would change in production, are in
 | `GET /transactions` | `limit` 1 to 100, `offset`, `category`, `startDate`, `endDate`, `sortBy` |
 | `GET /goals` | |
 | `GET /filters` | |
+| `GET /api/customers` | An addition for the demo picker only; see the Q&A |
 
 Responses follow the brief's shapes. An invalid request is a `400` and an unknown
 customer a `404`, both with a body that says what was wrong:
@@ -209,6 +220,96 @@ customer a `404`, both with a body that says what was wrong:
 Two environment variables help testing: `MOCK_NOW` pins the API's clock (the end-to-end
 tests use `2026-10-11T12:00:00Z`), and `MOCK_LATENCY_MS` adds a delay so loading states can
 be seen.
+
+## The searchable picker
+
+The header's "Viewing as" control started as a native `<select>`. With more than a
+handful of clients a native select can't be searched, can show only one line per option,
+and draws its arrow hard against the edge, differently in every browser. It is now
+`components/ui/Combobox.jsx`, a reusable component:
+
+- **Search as you type.** It matches the name, client number or account type, ignoring
+  case and accents ("Zoe" finds "Zoë"), with the words in any order.
+- **Two lines per option:** the name, then the account type and client number, so two
+  clients with similar names can be told apart.
+- **Keyboard first.** It opens with the arrow keys and the search box already focused.
+  Up and down move the highlight, Home and End jump, Enter chooses, Escape closes. Focus
+  returns to the button afterwards, so a keyboard user is never left stranded.
+- **Screen readers.** It follows the WAI-ARIA combobox pattern: the highlighted option is
+  announced as the keys move, and the number of results, including none, is announced
+  as you type.
+
+The remaining dropdowns (category, sort, page size) are short fixed lists, so they stay
+native selects, which phones show as their own pickers. Their arrow is now an icon with
+room around it rather than the browser's default.
+
+## Questions a reviewer might ask
+
+**Why Next.js, when the role asks for React?**
+It is React: every screen is function components and hooks. Next is used for three things
+only (routing, the production server, hosting the mock API), and only five imports are
+Next-specific, so a move to Vite is a small change. See [How it is built](#how-it-is-built).
+
+**Why is there no sign-in?**
+The brief does not ask for one, and a pretend login with pretend passwords would prove
+nothing. The "Viewing as" picker stands in for it. In production the client would be
+whoever is signed in, decided on the server from the session; the client id would never
+come from the URL or from a list, so nobody could read someone else's account by
+changing a number.
+
+**Why can't I add or edit a transaction?**
+The brief's seven endpoints are all read-only and it asks to *display* spending. A bank
+customer does not create transactions: card payments, debit orders and transfers do.
+Writing them would mean inventing endpoints the spec does not have.
+
+**Why build the API instead of returning the sample JSON?**
+The samples cannot filter, and they disagree with each other (their category shares add
+up to 99.9%). Generated, deterministic data makes every filter real, and lets the tests
+check that the summary, the categories and the transactions agree to the cent.
+
+**Why both TanStack Query and Redux?**
+They hold different things. TanStack Query holds server data: caching, retries, refetching
+and loading states. Redux holds the client's choices, and only those are persisted.
+Keeping figures out of browser storage is deliberate: stale balances are worse than a
+loading skeleton, and account data does not belong in localStorage.
+
+**Why are amounts in cents?**
+Floating-point rands drift (`0.1 + 0.2 !== 0.3`). Everything is added up in whole cents
+and converted only at the edge.
+
+**Why Victory for the charts?**
+It is React-first (charts are components, composed like the rest of the UI), renders SVG,
+and is easy to theme to the Capitec palette. The charts are hidden from screen readers
+because the same figures are always on screen as text: the list beside the donut, and the
+trend's table view.
+
+**How is it tested?**
+Three layers: the API's rules in plain unit tests; components and sections rendered
+against the real API logic with Testing Library; and Playwright in a real browser on
+desktop and phone, including axe accessibility scans. The Docker image will not build if
+lint or the unit tests fail, and CI runs everything on every push.
+
+**How does it behave on a slow or failing network?**
+Each section has its own loading skeleton, error message and "Try again" button, so a
+failing endpoint breaks one card, not the page. Failed requests are retried twice, but a
+`4xx` is not, since retrying a bad request only delays the message. Set
+`MOCK_LATENCY_MS=1500` to see the loading states.
+
+**Is it accessible?**
+It is built to WCAG 2 AA and scanned with axe in the end-to-end tests. Specifically:
+- every control works from the keyboard;
+- status is always given in words as well as colour;
+- the brief's pastel category colours are used as tints, never as text;
+- "Hide amounts" hides figures from screen readers too, not only from view.
+
+**What would you do with more time?**
+- Sign-in, with the client taken from the session on the server.
+- A nonce-based content security policy, to remove `'unsafe-inline'`.
+- Prefetching the first view's data on the server, so there are no skeletons on first load.
+- An error boundary per section.
+- Error monitoring.
+
+These are in [docs/DECISIONS.md](docs/DECISIONS.md).
 
 ---
 

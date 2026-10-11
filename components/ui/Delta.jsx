@@ -6,7 +6,7 @@
  * say the direction itself.
  */
 import { TbArrowDownRight, TbArrowUpRight, TbMinus } from "react-icons/tb";
-import { formatChange } from "@/lib/format";
+import { formatChange } from "@/utils/lib/format";
 
 export default function Delta({ value, goodWhen = "down", label, inverse = false }) {
   if (value === null || value === undefined) {

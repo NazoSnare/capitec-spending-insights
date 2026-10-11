@@ -8,12 +8,13 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { TbCalendarEvent, TbX } from "react-icons/tb";
-import { selectPrefs, setCustomRange, setPeriod } from "@/store/preferencesSlice";
-import { PERIODS } from "@/lib/periods";
+import { selectPrefs, setCustomRange, setPeriod } from "@/utils/store/preferencesSlice";
+import { periodOptions } from "@/utils/lib/periods";
+import { useFilters } from "@/utils/hooks/useSpendingApi";
 import SegmentedControl from "@/components/ui/SegmentedControl";
 import Button from "@/components/ui/Button";
 import DateField from "@/components/ui/DateField";
-import { formatDay } from "@/lib/format";
+import { formatDay } from "@/utils/lib/format";
 
 const today = () => new Date().toISOString().slice(0, 10);
 
@@ -26,7 +27,8 @@ export function rangeProblem(startDate, endDate, max = today()) {
 
 export default function PeriodToolbar() {
   const dispatch = useDispatch();
-  const { period, customRange } = useSelector(selectPrefs);
+  const { customerId, period, customRange } = useSelector(selectPrefs);
+  const { data: filters } = useFilters(customerId);
   const [open, setOpen] = useState(false);
   const [draft, setDraft] = useState(customRange || { startDate: "", endDate: "" });
   const problem = rangeProblem(draft.startDate, draft.endDate);
@@ -43,7 +45,7 @@ export default function PeriodToolbar() {
     <div className="flex flex-wrap items-center gap-2">
       <SegmentedControl
         label="Period"
-        options={PERIODS.map((p) => ({ value: p.value, label: p.label }))}
+        options={periodOptions(filters?.dateRangePresets)}
         value={customRange ? "" : period}
         onChange={(v) => dispatch(setPeriod(v))}
       />

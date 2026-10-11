@@ -28,6 +28,7 @@ export default function SegmentedControl({ label, options, value, onChange, size
             aria-checked={on}
             tabIndex={on || (index === -1 && i === 0) ? 0 : -1}
             onClick={() => onChange(o.value)}
+            title={o.title}
             className={`rounded-full font-semibold transition-colors ${size === "sm" ? "px-3 py-1 text-[12.5px]" : "px-3.5 py-1.5 text-[13.5px]"} ${on ? "bg-navy text-white shadow-sm" : "text-ink-2 hover:text-ink"}`}
           >
             {o.label}

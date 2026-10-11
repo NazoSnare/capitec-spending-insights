@@ -8,10 +8,10 @@
  */
 import { VictoryAxis, VictoryBar, VictoryChart, VictoryLine, VictoryTooltip, VictoryVoronoiContainer } from "victory";
 import { useSelector } from "react-redux";
-import { selectHideAmounts } from "@/store/preferencesSlice";
-import { formatMonth, formatZAR, formatZARShort } from "@/lib/format";
+import { selectHideAmounts } from "@/utils/store/preferencesSlice";
+import { formatMonth, formatZAR, formatZARShort } from "@/utils/lib/format";
 import { axisStyle, FONT, tooltipStyle } from "./chartTheme";
-import useElementWidth from "@/hooks/useElementWidth";
+import useElementWidth from "@/utils/hooks/useElementWidth";
 
 export default function SpendingTrendChart({ trends, height = 260 }) {
   const hidden = useSelector(selectHideAmounts);

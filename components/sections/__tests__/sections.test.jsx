@@ -7,13 +7,13 @@ import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { mockApi, NOW, renderWithProviders, shown } from "@/test/render";
 import * as spending from "@/server/spending";
-import SummaryCards from "@/sections/SummaryCards";
-import CategoryBreakdown from "@/sections/CategoryBreakdown";
-import GoalsSection from "@/sections/GoalsSection";
-import TransactionList from "@/sections/TransactionList";
-import TransactionFilters from "@/sections/TransactionFilters";
-import PeriodToolbar, { rangeProblem } from "@/sections/PeriodToolbar";
-import { formatZAR } from "@/lib/format";
+import SummaryCards from "@/components/sections/SummaryCards";
+import CategoryBreakdown from "@/components/sections/CategoryBreakdown";
+import GoalsSection from "@/components/sections/GoalsSection";
+import TransactionList from "@/components/sections/TransactionList";
+import TransactionFilters from "@/components/sections/TransactionFilters";
+import PeriodToolbar, { rangeProblem } from "@/components/sections/PeriodToolbar";
+import { formatZAR } from "@/utils/lib/format";
 
 vi.mock("next/navigation", () => ({ usePathname: () => "/" }));
 

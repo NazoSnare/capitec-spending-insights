@@ -7,16 +7,16 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { TbChartBar, TbTable } from "react-icons/tb";
-import { useTrends } from "@/hooks/useSpendingApi";
-import { errorMessage } from "@/lib/apiClient";
-import { selectPrefs, setTrendMonths } from "@/store/preferencesSlice";
+import { useTrends } from "@/utils/hooks/useSpendingApi";
+import { errorMessage } from "@/utils/lib/apiClient";
+import { selectPrefs, setTrendMonths } from "@/utils/store/preferencesSlice";
 import Card from "@/components/ui/Card";
 import Money from "@/components/ui/Money";
 import SegmentedControl from "@/components/ui/SegmentedControl";
 import Skeleton from "@/components/ui/Skeleton";
 import { ErrorBlock, EmptyBlock } from "@/components/ui/States";
 import SpendingTrendChart from "@/components/charts/SpendingTrendChart";
-import { formatMonth } from "@/lib/format";
+import { formatMonth } from "@/utils/lib/format";
 
 export default function TrendSection() {
   const dispatch = useDispatch();

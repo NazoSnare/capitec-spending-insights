@@ -13,8 +13,8 @@ import { useState } from "react";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import { QueryClientProvider } from "@tanstack/react-query";
-import { makeStore } from "@/store";
-import { makeQueryClient } from "@/lib/queryClient";
+import { makeStore } from "@/utils/store";
+import { makeQueryClient } from "@/utils/lib/queryClient";
 
 export default function Providers({ children }) {
   const [{ store, persistor }] = useState(() => makeStore());

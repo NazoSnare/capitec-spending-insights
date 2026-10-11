@@ -3,15 +3,15 @@
 /** The four headline figures for the chosen period. */
 import { useSelector } from "react-redux";
 import { TbHash, TbReceipt, TbTrophy, TbWallet } from "react-icons/tb";
-import { useSummary } from "@/hooks/useSpendingApi";
-import { errorMessage } from "@/lib/apiClient";
-import { selectPrefs } from "@/store/preferencesSlice";
+import { useSummary } from "@/utils/hooks/useSpendingApi";
+import { errorMessage } from "@/utils/lib/apiClient";
+import { selectPrefs } from "@/utils/store/preferencesSlice";
 import StatCard from "@/components/ui/StatCard";
 import Money from "@/components/ui/Money";
 import Delta from "@/components/ui/Delta";
 import Skeleton from "@/components/ui/Skeleton";
 import { ErrorBlock } from "@/components/ui/States";
-import { comparedLabel } from "@/lib/periods";
+import { comparedLabel } from "@/utils/lib/periods";
 
 export default function SummaryCards() {
   const { customerId, period } = useSelector(selectPrefs);

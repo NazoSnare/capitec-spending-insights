@@ -133,4 +133,53 @@ export const CUSTOMERS = {
     budgets: { Groceries: 110_000, Transportation: 60_000 },
     appetite: 0.7,
   },
+  "24680": {
+    customerId: "24680",
+    name: "Lerato Khumalo",
+    email: "lerato.khumalo@example.co.za",
+    joinDate: "2022-03-09",
+    accountType: "premium",
+    currency: "ZAR",
+    budgets: { Groceries: 200_000, Dining: 90_000, Shopping: 80_000, Entertainment: 70_000 },
+    appetite: 1.35,
+  },
+  "13579": {
+    customerId: "13579",
+    name: "Pieter van der Merwe",
+    email: "pieter.vandermerwe@example.co.za",
+    joinDate: "2021-11-20",
+    accountType: "standard",
+    currency: "ZAR",
+    budgets: { Transportation: 120_000, Groceries: 130_000 },
+    appetite: 1.1,
+  },
+  // Joined recently: a short history, so comparisons can have nothing to compare with.
+  "11223": {
+    customerId: "11223",
+    name: "Ayanda Nkosi",
+    email: "ayanda.nkosi@example.co.za",
+    joinDate: "2026-09-18",
+    accountType: "standard",
+    currency: "ZAR",
+    budgets: { Groceries: 90_000 },
+    appetite: 0.8,
+  },
+  // No budgets set: shows the empty state of the budgets card.
+  "99887": {
+    customerId: "99887",
+    name: "Fatima Patel",
+    email: "fatima.patel@example.co.za",
+    joinDate: "2023-07-04",
+    accountType: "premium",
+    currency: "ZAR",
+    budgets: {},
+    appetite: 0.9,
+  },
 };
+
+/**
+ * The customers a demo viewer can switch between. Not one of the brief's endpoints: in a
+ * real app the customer comes from the signed-in session, not from a list.
+ */
+export const listCustomers = () =>
+  Object.values(CUSTOMERS).map(({ customerId, name, accountType, joinDate }) => ({ customerId, name, accountType, joinDate }));

@@ -9,16 +9,16 @@ import { useState } from "react";
 import Link from "next/link";
 import { useDispatch, useSelector } from "react-redux";
 import { TbChartPie } from "react-icons/tb";
-import { useCategories } from "@/hooks/useSpendingApi";
-import { errorMessage } from "@/lib/apiClient";
-import { selectPrefs, setTransactionFilter } from "@/store/preferencesSlice";
+import { useCategories } from "@/utils/hooks/useSpendingApi";
+import { errorMessage } from "@/utils/lib/apiClient";
+import { selectPrefs, setTransactionFilter } from "@/utils/store/preferencesSlice";
 import Card from "@/components/ui/Card";
 import Money from "@/components/ui/Money";
 import Skeleton from "@/components/ui/Skeleton";
 import { ErrorBlock, EmptyBlock } from "@/components/ui/States";
-import CategoryIcon from "@/components/CategoryIcon";
+import CategoryIcon from "@/components/shared/CategoryIcon";
 import CategoryDonut from "@/components/charts/CategoryDonut";
-import { formatDay } from "@/lib/format";
+import { formatDay } from "@/utils/lib/format";
 
 export default function CategoryBreakdown() {
   const dispatch = useDispatch();

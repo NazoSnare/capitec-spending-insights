@@ -13,3 +13,18 @@ export const comparedLabel = (value) => {
   const p = PERIODS.find((x) => x.value === value);
   return p ? `vs previous ${p.label}` : "vs previous period";
 };
+
+/**
+ * The period buttons, from the API's `/filters` presets when they have arrived, so a
+ * period added on the server appears without a front-end change. "Last 7 days" is
+ * shortened to "7 days" for the button; the full label stays as its accessible name.
+ * Until the presets arrive, the built-in list is used.
+ */
+export function periodOptions(presets) {
+  const source = presets?.length ? presets : PERIODS.map((p) => ({ value: p.value, label: p.long }));
+  return source.map((p) => ({
+    value: p.value,
+    label: p.label.replace(/^Last\s+/i, "").replace(/^year$/i, "1 year"),
+    title: p.label,
+  }));
+}
