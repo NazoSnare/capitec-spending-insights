@@ -19,9 +19,16 @@ export default function SpendingTrendChart({ trends, height = 260 }) {
   const narrow = width < 480;
   const full = trends.filter((t) => !t.partial);
   const average = full.length ? full.reduce((s, t) => s + t.totalSpent, 0) / full.length : 0;
-  const data = trends.map((t) => ({
+  // Bars sit at the month's position, never at its label: two months can share a label
+  // ("Nov" in a 24-month view), and Victory merges bars that share an x.
+  const tickLabels = trends.map((t) =>
     // On a narrow screen with many months, label every month by its first letter.
-    x: narrow && trends.length > 12 ? formatMonth(t.month, { short: true }).slice(0, 1) + t.month.slice(2, 4) : formatMonth(t.month, { short: trends.length > 6 }),
+    narrow && trends.length > 12 ? formatMonth(t.month, { short: true }).slice(0, 1) + t.month.slice(2, 4) : formatMonth(t.month, { short: trends.length > 6 }),
+  );
+  const ticks = trends.map((_, i) => i + 1);
+  const data = trends.map((t, i) => ({
+    x: i + 1,
+    month: t.month,
     y: t.totalSpent,
     partial: t.partial,
     label: `${formatMonth(t.month)}${t.partial ? " (so far)" : ""}\n${hidden ? "R ••••" : formatZAR(t.totalSpent)}\n${t.transactionCount} transactions`,
@@ -37,7 +44,12 @@ export default function SpendingTrendChart({ trends, height = 260 }) {
         domainPadding={{ x: barWidth, y: [0, 12] }}
         containerComponent={<VictoryVoronoiContainer voronoiDimension="x" voronoiBlacklist={["average"]} />}
       >
-        <VictoryAxis style={axisStyle} />
+        <VictoryAxis
+          style={axisStyle}
+          tickValues={ticks}
+          // Every other label on a narrow screen with many months, so labels never overlap.
+          tickFormat={(v, i) => (narrow && trends.length > 12 && i % 2 ? "" : tickLabels[v - 1] ?? "")}
+        />
         <VictoryAxis dependentAxis style={axisStyle} tickFormat={(v) => (hidden ? "" : formatZARShort(v))} />
         <VictoryBar
           data={data}
